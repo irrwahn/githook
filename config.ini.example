@@ -1,0 +1,16 @@
+; Copy this file to config.ini and edit.
+
+[smtp]
+host = smtp.example.com
+port = 25;
+auth = LOGIN
+user = user@example.com
+passwd = secret
+from_email = user@example.com
+from_name = GitHook Gizmo
+
+[repo_owner/repo_name]
+notify = contact1@example.com,contact2@invalid.none
+
+[repo_owner/other_repo_name]
+notify = other_contact1@example.com,other_contact2@invalid.none

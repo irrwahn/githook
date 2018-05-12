@@ -1,0 +1,9 @@
+<FilesMatch "">
+    Order deny,allow
+    deny from all
+</Filesmatch>
+
+<Files hook.php>
+    order allow,deny
+    allow from all
+</Files>
