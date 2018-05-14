@@ -19,10 +19,10 @@ notifications, extract relevant information from the POST requests json
 payload and forward it as formatted email to the recipients configured
 for the respective repository.
 
-Note: GitHook uses the third party PHPMailer module for SMTP mail
-transport, as the PHP built-in `mail()` function is somewhat limited and
-e.g. will not work on simple web-space installations, where no mail
-transport agent (MTA) is configured.
+Note: GitHook uses the third party [PHPMailer](https://github.com/PHPMailer/PHPMailer)
+module for SMTP mail transport, as the PHP built-in `mail()` function is
+somewhat limited and e.g. will not work on simple web-space installations,
+where no mail transport agent (MTA) is configured.
 
 As it was written to simply scratch one personal itch, in its current
 state GitHook's configuration options are quite limited and a lot of
@@ -48,18 +48,18 @@ patches, if you think a particular issue or use case should be addressed.
    GitHub webhook events can be delivered to:
    `http[s]://<your_domain_and_path>/githook/hook.php`
 
-    **NOTES:**
+   **NOTES:**
 
-    * Please apply common sense and make sure that access via the web
-    server is reasonably restricted. The only file that needs to be
-    directly accessible is the `hook.php` script, outside access to
-    everything else should be denied as e.g. suggested by the included
-    `.htaccess` file. First and foremost you do not want anyone to see
-    your `config.ini`, as it contains mail account credentials in plain
-    text.
+   * Please apply common sense and make sure that access via the web
+   server is reasonably restricted. The only file that needs to be
+   directly accessible is the `hook.php` script, outside access to
+   everything else should be denied as e.g. suggested by the included
+   `.htaccess` file. First and foremost you do not want anyone to see
+   your `config.ini`, as it contains mail account credentials in plain
+   text.
 
-    * The script logs events to a file named `hook.log`, hence this file
-    should be writable by the web server.
+   * The script logs events to a file named `hook.log`, hence this file
+   should be writable by the web server.
 
 
 ## Configuration
@@ -68,21 +68,19 @@ patches, if you think a particular issue or use case should be addressed.
 
 2. Edit `config.ini` to accommodate your needs, e.g.:
 
-        ; My config.ini
-
         ; Mail tranport settings:
 
         [smtp]
         host = smpthost.example.com
-        port = 25;
+        port = 465
+        security = SSL
         auth = LOGIN
         user = githook@example.com
         passwd = ***secret***
         from_email = githook@example.com
         from_name = My GitHook Gizmo
 
-
-        ; Per-repo recipient mail addresses as comma separated list:
+        ; Per-repository recipient mail addresses as comma separated list:
 
         [my_gihub_account/my_repo_1]
         notify = recipient1@example.com,foo@invalid.none,bar@fizz.buzz
@@ -90,13 +88,18 @@ patches, if you think a particular issue or use case should be addressed.
         [my_gihub_account/my_repo_2]
         notify = fred@example.org
 
+   **NOTE:** SSL/TLS secured mail transport may fail in unpredictable
+   (and often hard to debug) ways, if there is a problem relating to the
+   certificate, such as a bad, self-signed or expired certificate, or
+   server redirection by the ISP, or out of date CA file on the PHP host.
+
 3. In GitHub, add new webhooks for e.g. `my_repo_1` and `my_repo_2`,
    enter the Payload URL, e.g. `https://<your_domain_and_path>/githook/hook.php`
    and set the content type to `application/x-www-form-urlencoded`.
    Tick the `Just the push event` radio button and save the settings.
 
-   Note: Upon webhook creation, GitHub will send a `ping` event to your
-   payload URL. Those events are neither processed nor forwarded by
+   **NOTE:** Upon webhook creation, GitHub will send a `ping` event to
+   your payload URL. Those events are neither processed nor forwarded by
    `hook.php`, but will still be logged to `hook.log`.
 
 

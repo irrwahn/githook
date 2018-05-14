@@ -4,7 +4,10 @@
 
 [smtp]
 host = smtp.example.com
-port = 25;
+port = 25
+; security options: empty | SSL | TLS
+security =
+; authentication options: empty | CRAM-MD5 | LOGIN | PLAIN | XOAUTH2
 auth = LOGIN
 user = user@example.com
 passwd = secret

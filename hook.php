@@ -149,12 +149,12 @@ try {
     //$mailer->SMTPDebug = 3;
     $mailer->Host = $config['smtp']['host'];
     $mailer->Port = $config['smtp']['port'];
-    $mailer->SMTPAuth = true;
-    $mailer->AuthType = $config['smtp']['auth'];   // CRAM-MD5, LOGIN, PLAIN, XOAUTH2, attempted in that order if not specified.
+    $mailer->SMTPSecure = $config['smtp']['security'];  // '' | 'SSL' | 'TLS'
+    $mailer->SMTPAutoTLS = false;
+    $mailer->SMTPAuth = !empty( $config['smtp']['auth'] );
+    $mailer->AuthType = $config['smtp']['auth'];        // '' | 'CRAM-MD5' | 'LOGIN' | 'PLAIN' | 'XOAUTH2'
     $mailer->Username = $config['smtp']['user'];
     $mailer->Password = $config['smtp']['passwd'];
-    $mailer->SMTPSecure = '';      // '', 'SSL', 'TLS'
-    $mailer->SMTPAutoTLS = false;
     $mailer->CharSet = 'UTF-8';
     $mailer->setFrom( $config['smtp']['from_email'], $config['smtp']['from_name'] );
     $mailer->Subject = $summary;
