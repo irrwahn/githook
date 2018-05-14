@@ -1,5 +1,11 @@
 ; Copy this file to config.ini and edit.
 
+; General settings:
+
+[general]
+; Set to '1' to send email for well-formed events of unrecognized type:
+forward_all = 0
+
 ; Mail transport settings:
 
 [smtp]
