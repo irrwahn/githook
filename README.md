@@ -58,7 +58,7 @@ patches, if you think a particular issue or use case should be addressed.
    your `config.ini`, as it contains mail account credentials in plain
    text.
 
-   * The script logs events to a file named `hook.log`, hence this file
+   * If the script is configured to log events to a file, that file
    should be writable by the web server.
 
 
@@ -68,25 +68,24 @@ patches, if you think a particular issue or use case should be addressed.
 
 2. Edit `config.ini` to accommodate your needs, e.g.:
 
-        ; Mail tranport settings:
+        [general]
+        logfile = "hook.log"
 
         [smtp]
-        host = smpthost.example.com
+        host = "smpthost.example.com"
         port = 465
-        security = SSL
-        auth = LOGIN
-        user = githook@example.com
-        passwd = ***secret***
-        from_email = githook@example.com
-        from_name = My GitHook Gizmo
-
-        ; Per-repository recipient mail addresses as comma separated list:
+        security = "SSL"
+        auth = "LOGIN"
+        user = "githook@example.com"
+        passwd = "***secret***"
+        from_email = "githook@example.com"
+        from_name = "My GitHook Gizmo"
 
         [my_gihub_account/my_repo_1]
-        notify = recipient1@example.com,foo@invalid.none,bar@fizz.buzz
+        notify = "recipient1@example.com,foo@invalid.none,bar@fizz.buzz"
 
         [my_gihub_account/my_repo_2]
-        notify = fred@example.org
+        notify = "fred@example.org"
 
    **NOTE:** SSL/TLS secured mail transport may fail in unpredictable
    (and often hard to debug) ways, if there is a problem relating to the

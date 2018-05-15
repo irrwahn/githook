@@ -11,17 +11,36 @@ require 'guess_ip.php';
 require 'evt_push.php';
 require 'evt_default.php';
 
-// Create a silent dummy session for internal (logging ID) use only:
-ini_set( "session.use_cookies", 0 );
-session_start();
-header_remove();
+// Read and parse configuration:
+$configFile = __DIR__ . '/config.ini';
+if ( !is_readable( $configFile ) )
+{
+    $configFile .= '.php';
+    if ( !is_readable( $configFile ) )
+    {
+        error_log( '['. __FILE__ . '] ERROR: Missing or inaccessible config file.' );
+        die( 1 );
+    }
+}
+$config = parse_ini_file( $configFile, true );
+if ( !$config || !isset( $config['smtp'] ) )
+{
+    error_log( '['. __FILE__ . '] ERROR: Invalid config file "' . $configFile . '".' );
+    die( 2 );
+}
 
 // Logging and termination facilities:
-$logid = session_id();
-$logfp = fopen( 'hook.log', 'a' ) or $logfp = STDERR;
-$log = function ( $msg ) use ( $logfp, $logid ) {
+ini_set( "session.use_cookies", 0 );
+session_start();    // Silent dummy session for logging purposes only.
+header_remove();
+$logId = session_id();
+$logFp = empty( $config['general']['logfile'] ) ? false
+        : fopen( $config['general']['logfile'], 'a' );
+if ( !$logFp )
+    $logFp = fopen( 'php://stderr', 'w' );
+$log = function ( $msg ) use ( $logFp, $logId ) {
     $now = new DateTime();
-    fputs( $logfp, sprintf( "[%s] [%s] %s", $now->format('Y-m-d H:i:s'), $logid, $msg . PHP_EOL ) );
+    fputs( $logFp, sprintf( "[%s] [%s] %s", $now->format('Y-m-d H:i:s'), $logId, $msg . PHP_EOL ) );
 };
 $die = function ( $code, $msg ) use ( $log ) {
     $log( $msg );
@@ -40,14 +59,6 @@ else
 if ( empty( $_SERVER['HTTP_X_GITHUB_EVENT'] ) )
     $die( 3, 'ERROR: Not a GitHub event: ' . PHP_EOL . print_r( $_SERVER, true ) . print_r( $_POST, true ) );
 $event = $_SERVER['HTTP_X_GITHUB_EVENT'];
-
-// Read and parse configuration:
-$configFile = __DIR__ . '/config.ini';
-if ( !is_file( $configFile ) )
-    $die( 1, 'ERROR: Missing config file.' );
-$config = parse_ini_file( $configFile, true );
-if ( !$config || !isset( $config['smtp'] ) )
-    $die( 2, 'ERROR: Invalid config file.' );
 
 // Check and parse request payload:
 if ( empty( $_POST['payload'] ) )
