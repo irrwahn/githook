@@ -7,9 +7,7 @@ require __DIR__ . '/PHPMailer/src/Exception.php';
 require __DIR__ . '/PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/PHPMailer/src/SMTP.php';
 
-require 'guess_ip.php';
-require 'evt_push.php';
-require 'evt_default.php';
+require __DIR__ . '/guess_ip.php';
 
 // Read and parse configuration:
 $configFile = __DIR__ . '/config.ini';
@@ -74,14 +72,18 @@ if ( empty( $config[$repoName] ) )
     $die( 7, sprintf( 'ERROR: Repository "%s" not configured.', $repoName ) );
 $log( sprintf( 'Processing hook for "%s" event "%s".', $repoName, $event ) );
 
-// Invoke appropriate formatter for event and check result:
+// Invoke appropriate event handler and check result:
+$eventHandler = 'evt_' . $event;
+$eventHandlerModule = __DIR__ . '/' . $eventHandler . '.php';
+if ( !is_readable( $eventHandlerModule )
+    || !(include $eventHandlerModule)
+    || !is_callable( $eventHandler ) ) {
+    require __DIR__ . '/evt_default.php';
+    $eventHandler = 'evt_default';
+}
 $message = [ 'subject' => '', 'body' => '', 'errno' => 0, 'errmsg' => '' ];
-if ( $event === 'push' )
-    evt_push( $event, $payload, $config, $message );
-else
-    evt_default( $event, $payload, $config, $message );
-
-if ( !empty( $message['errno'] ) )
+if ( $eventHandler( $event, $payload, $config, $message ) == false
+    || !empty( $message['errno'] ) )
     $die( $message['errno'], $message['errmsg'] );
 if ( empty( $message['subject'] ) && empty( $message['body'] ) )
     $die( 9, 'ERROR: empty message subject and body, not sending email.' );
