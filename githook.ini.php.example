@@ -1,6 +1,6 @@
 ; <?php die(); /* Safeguard against misconfigured web server.
 
-; Copy this file to config.ini (or better still: config.ini.php) and edit.
+; Copy this file to githook.ini (or better still: githook.ini.php) and edit.
 
 ; General settings:
 

@@ -10,7 +10,7 @@ require __DIR__ . '/PHPMailer/src/SMTP.php';
 require __DIR__ . '/guess_ip.php';
 
 // Read and parse configuration:
-$configFile = __DIR__ . '/config.ini';
+$configFile = __DIR__ . '/githook.ini';
 if ( !is_readable( $configFile ) )
 {
     $configFile .= '.php';

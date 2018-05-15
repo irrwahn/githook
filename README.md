@@ -55,7 +55,7 @@ patches, if you think a particular issue or use case should be addressed.
    directly accessible is the `hook.php` script, outside access to
    everything else should be denied as e.g. suggested by the included
    `.htaccess` file. First and foremost you do not want anyone to see
-   your `config.ini`, as it contains mail account credentials in plain
+   your `githook.ini`, as it contains mail account credentials in plain
    text.
 
    * If the script is configured to log events to a file, that file
@@ -64,9 +64,9 @@ patches, if you think a particular issue or use case should be addressed.
 
 ## Configuration
 
-1. Copy the file `config.ini.example` to `config.ini`.
+1. Copy the file `githook.ini.php.example` to `githook.ini.php`.
 
-2. Edit `config.ini` to accommodate your needs, e.g.:
+2. Edit `githook.ini.php` to accommodate your needs, e.g.:
 
         [general]
         logfile = "hook.log"
