@@ -15,19 +15,24 @@ for more information.)
 ## Description
 
 GitHook makes use of the GitHub "webhook" interface to receive push event
-notifications, extract relevant information from the POST requests json
-payload and forward it as formatted email to the recipients configured
-for the respective repository.
+notifications, optionally check the request payload signature and extract
+relevant information from the POST request json payload and forward it as
+formatted email to the recipients configured for the respective repository.
 
-Note: GitHook uses the third party [PHPMailer](https://github.com/PHPMailer/PHPMailer)
+Although originally written to only handle the `push` event, it can be
+configured to send emails containing pretty-printed payload data for all
+other types of events. Moreover, GitHook can easily be extended without
+introducing changes to the core logic simply by providing additional
+scripts. These scripts are automatically executed for a given event, if
+they are named following the scheme `evt_eventname.php` and declare a
+function named `evt_event()`. See `evt_push.php` and `evt_default.php`
+to get an idea of how this works.
+
+Note:
+GitHook uses the third party [PHPMailer](https://github.com/PHPMailer/PHPMailer)
 module for SMTP mail transport, as the PHP built-in `mail()` function is
 somewhat limited and e.g. will not work on simple web-space installations,
 where no mail transport agent (MTA) is configured.
-
-As it was written to simply scratch one personal itch, in its current
-state GitHook's configuration options are quite limited and a lot of
-stuff is hard-coded. Please feel free to submit suggestions, fixes or
-patches, if you think a particular issue or use case should be addressed.
 
 
 ## Installation
@@ -90,6 +95,8 @@ patches, if you think a particular issue or use case should be addressed.
 
         [general]
         logfile = "hook.log"
+        forward_all = 1
+        secret = "my_github_webhook_secret"
 
         [smtp]
         host = "smpthost.example.com"
@@ -112,14 +119,16 @@ patches, if you think a particular issue or use case should be addressed.
    certificate, such as a bad, self-signed or expired certificate, or
    server redirection by the ISP, or out of date CA file on the PHP host.
 
-3. In GitHub, add new webhooks for e.g. `my_repo_1` and `my_repo_2`,
-   enter the Payload URL, e.g. `https://<your_domain_and_path>/githook/hook.php`
-   and set the content type to `application/x-www-form-urlencoded`.
-   Tick the `Just the push event` radio button and save the settings.
+3. In GitHub, add new webhooks for e.g. `my_repo_1` and `my_repo_2`, enter
+   the Payload URL, e.g. `https://<your_domain_and_path>/githook/hook.php`
+   and set the content type to `application/x-www-form-urlencoded`. Set
+   the secret to the same value as in the GitHook configuration file.
+   Finally, select the events you wish to receive notifications for and
+   save the settings.
 
-   **NOTE:** Upon webhook creation, GitHub will send a `ping` event to
-   your payload URL. Those events are neither processed nor forwarded by
-   `hook.php`, but will still be logged to `hook.log`.
+   **NOTE:** Upon webhook creation, GitHub will send out a `ping` event
+   to your payload URL. This event will only be processed and forwarded
+   by GitHook, if `forward_all` is enabled in the configuration.
 
 
 ## License
