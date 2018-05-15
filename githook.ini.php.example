@@ -9,6 +9,9 @@
 logfile = "hook.log"
 ; Set to '1' to send email for well-formed events of unrecognized type:
 forward_all = 0
+; Set to the same value as the "Secret" field in GitHub webhook settings,
+; or leave empty to disable the payload signature check:
+secret =
 
 ; Mail transport settings:
 

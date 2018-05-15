@@ -62,6 +62,17 @@ if ( empty( $_SERVER['HTTP_X_GITHUB_EVENT'] ) )
     $die( 3, 'ERROR: Not a GitHub event: ' . PHP_EOL . print_r( $_SERVER, true ) . print_r( $_POST, true ) );
 $event = $_SERVER['HTTP_X_GITHUB_EVENT'];
 
+// Perform payload signature check, if configured:
+if ( !empty( $config['general']['secret'] ) ) {
+    if ( empty( $_SERVER['HTTP_X_HUB_SIGNATURE'] ) )
+        $die( 20, 'ERROR: Payload signature check requested, but request not signed.' );
+    $requestBody = file_get_contents( 'php://input' );
+    $signature = 'sha1=' . hash_hmac( 'sha1', $requestBody, $config['general']['secret'] );
+    if ( !hash_equals( $signature, $_SERVER['HTTP_X_HUB_SIGNATURE'] ) )
+        $die( 21, 'ERROR: Payload signature mismatch.' );
+    $log( 'Payload signature verified.' );
+}
+
 // Check and parse request payload:
 if ( empty( $_POST['payload'] ) )
     $die( 4, 'ERROR: No payload provided.' );
