@@ -12,7 +12,7 @@ function evt_default( $event, $payload, $config, &$message ) {
     }
 
     $message['subject'] = sprintf( '[%s] received event "%s"', $repoName, $event );
-    $message['body'] = print_r( $payload, true );
+    $message['body'] = 'X-GitHub-Event: ' . $event . PHP_EOL . print_r( $payload, true );
     $message['errno'] = 0;
     $message['errmsg'] = '';
     return true;
