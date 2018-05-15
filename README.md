@@ -55,8 +55,9 @@ patches, if you think a particular issue or use case should be addressed.
    directly accessible is the `hook.php` script, outside access to
    everything else should be denied as e.g. suggested by the included
    `.htaccess` file. First and foremost you do not want anyone to see
-   your `githook.ini`, as it contains mail account credentials in plain
-   text.
+   your configuration file, as it contains mail account credentials
+   in plain text. See also the first note in section *Configuration*
+   below.
 
    * If the script is configured to log events to a file, that file
    should be writable by the web server.
@@ -66,7 +67,26 @@ patches, if you think a particular issue or use case should be addressed.
 
 1. Copy the file `githook.ini.php.example` to `githook.ini.php`.
 
-2. Edit `githook.ini.php` to accommodate your needs, e.g.:
+   **NOTE:** By default, the `hook.php` script will expect the ini file
+   to reside in the same directory as the script itself. However, before
+   parsing the ini file, a file named `preload.php`, if present, will be
+   included by the script. This allows to override the ini file location
+   and thus the actual githook configuration file to be placed outside
+   the web server's document root subtree. An actual `preload.php` file
+   might for example look like this:
+
+        <?php
+            $configFile = '/etc/githook.ini';
+        ?>
+
+   It is of course also possible to specify a path relative to the script
+   directory, e.g.:
+
+        <?php
+            $configFile = '../../githook.ini';
+        ?>
+
+2. Edit the configuration file to accommodate your needs, e.g.:
 
         [general]
         logfile = "hook.log"
